@@ -1,13 +1,12 @@
 import itertools
 import logging
 
-import numpy as np
-import matplotlib.pyplot as plt
 import gensim
+import matplotlib.pyplot as plt
+import numpy as np
+from distances import get_most_similar_documents
 from gensim.utils import simple_preprocess
 from sklearn.externals import joblib
-
-from src.distances import get_most_similar_documents
 
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
 logging.root.level = logging.INFO
@@ -200,9 +199,24 @@ class LDAModel:
         pass
 
 
+def get_sentences():
+    import pymongo
+    host = 'localhost'
+    port = 27017
+    db = 'patent'
+    col = pymongo.MongoClient(host, port)[db][db]
+    patterns = col.find({}).limit(300)
+    sentences = []
+    for p in patterns:
+        sentences.append(p['content'])
+    return sentences
+
+
 def main():
     # TODO
-    sentences = None
+    # sentences = []
+    sentences = get_sentences()
+    print(len(sentences))
     sentences = make_texts_corpus(sentences)
     id2word = gensim.corpora.Dictionary(sentences)
     id2word.filter_extremes(no_below=20, no_above=0.1)
@@ -216,7 +230,7 @@ def main():
     # load corpus
     # mm_corpus = gensim.corpora.MmCorpus('path_to_save_file.mm')
     lda_model = gensim.models.LdaModel(
-        cospus, num_topics=32, id2word=id2word, passes=10, chunksize=100
+        cospus, num_topics=64, id2word=id2word, passes=10, chunksize=100
     )
     # save model
     # lda_model.save('path_to_save_model.model')
