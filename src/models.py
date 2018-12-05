@@ -11,11 +11,15 @@ from sklearn.externals import joblib
 logging.basicConfig(format='%(levelname)s : %(message)s', level=logging.INFO)
 logging.root.level = logging.INFO
 
-
+MONGODB_SETTINGS = {
+    'db': 'patent',
+    'collection': 'patent',
+    'host': 'mongodb://localhost:27017/'
+}
 PATH_DICTIONARY = "models/id2word.dictionary"
 PATH_CORPUS = "models/corpus.mm"
 PATH_LDA_MODEL = "models/LDA.model"
-PATH_DOC_TOPIC_DIST = "model/doc_topic_dist.dat"
+PATH_DOC_TOPIC_DIST = "models/doc_topic_dist.dat"
 
 
 def head(stream, n=10):
@@ -27,8 +31,7 @@ def head(stream, n=10):
 
 def tokenize(text, STOPWORDS):
     # deacc=True to remove punctuations
-    return [token for token in simple_preprocess(text, deacc=True)
-            if token not in STOPWORDS]
+    return [token for token in simple_preprocess(text, deacc=True) if token not in STOPWORDS]
 
 
 def make_texts_corpus(sentences):
@@ -200,12 +203,12 @@ class LDAModel:
 
 
 def get_sentences():
-    import pymongo
-    host = 'localhost'
-    port = 27017
-    db = 'patent'
-    col = pymongo.MongoClient(host, port)[db][db]
-    patterns = col.find({}).limit(300)
+    from pymongo import MongoClient
+    client = MongoClient(MONGODB_SETTINGS['host'])
+    db = client[MONGODB_SETTINGS['db']]
+    col = db[MONGODB_SETTINGS['collection']]
+    # patterns = col.find({}).limit(300)
+    patterns = col.find({})  # find all
     sentences = []
     for p in patterns:
         sentences.append(p['content'])
@@ -224,16 +227,19 @@ def main():
 
     # save dictionary
     # id2word.save('path_to_save_file.dictionary')
+    id2word.save(PATH_DICTIONARY)
     cospus = StreamCorpus(sentences, id2word)
     # save corpus
     # gensim.corpora.MmCorpus.serialize('path_to_save_file.mm', cospus)
+    gensim.corpora.MmCorpus.serialize(PATH_CORPUS, cospus)
     # load corpus
     # mm_corpus = gensim.corpora.MmCorpus('path_to_save_file.mm')
     lda_model = gensim.models.LdaModel(
-        cospus, num_topics=64, id2word=id2word, passes=10, chunksize=100
+        cospus, num_topics=20, id2word=id2word, passes=10, chunksize=100
     )
     # save model
     # lda_model.save('path_to_save_model.model')
+    lda_model.save(PATH_LDA_MODEL)
     lda_model.print_topics(-1)
 
 

@@ -1,15 +1,15 @@
-import os
 import logging
+import os
 import random
 
-from flask import Flask, jsonify, render_template
 import numpy as np
 import pymongo
-
 import settings
+from flask import Flask, jsonify, render_template
 from src.distances import get_most_similar_documents
 from src.models import make_texts_corpus
 from src.utils import markdown_to_text
+from web import settings
 
 client = pymongo.MongoClient(settings.MONGODB_SETTINGS["host"])
 db = client[settings.MONGODB_SETTINGS["db"]]

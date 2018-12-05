@@ -2,6 +2,7 @@ import logging
 import re
 
 from bs4 import BeautifulSoup
+
 from markdown import markdown
 from pyvi import ViTokenizer
 

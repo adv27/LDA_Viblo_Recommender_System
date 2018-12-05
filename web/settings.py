@@ -1,6 +1,6 @@
 MONGODB_SETTINGS = {
-    'db': 'rsframgia',
-    'collection': 'posts',
+    'db': 'patent',
+    'collection': 'patent',
     'host': 'mongodb://localhost:27017/'
 }
 PATH_DICTIONARY = "models/id2word.dictionary"
