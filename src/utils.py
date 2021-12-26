@@ -11,19 +11,16 @@ logging.root.level = logging.INFO
 
 
 with open('data/vni_stopwords.txt') as f:
-    stopwords = []
-    for line in f:
-        stopwords.append("_".join(line.strip().split()))
+    stopwords = ["_".join(line.strip().split()) for line in f]
 
 
 def preprocessing_tags(soup, tags=None):
-    if tags is not None:
-        for tag in tags:
-            for sample in soup.find_all(tag):
-                sample.replaceWith('')
-    else:
+    if tags is None:
         raise NotImplementedError("Tags must be set!")
 
+    for tag in tags:
+        for sample in soup.find_all(tag):
+            sample.replaceWith('')
     return soup.get_text()
 
 

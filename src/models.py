@@ -177,7 +177,7 @@ class LDAModel:
         """
         coherence_values = []
         model_list = []
-        for num_topics in range(start, end, step):
+        for _ in range(start, end, step):
             model = gensim.models.wrappers.LdaMallet(
                 mallet_path, corpus=self.corpus,
                 num_topics=self.num_topics, id2word=self.id2word)
@@ -209,10 +209,7 @@ def get_sentences():
     col = db[MONGODB_SETTINGS['collection']]
     # patterns = col.find({}).limit(300)
     patterns = col.find({})  # find all
-    sentences = []
-    for p in patterns:
-        sentences.append(p['content'])
-    return sentences
+    return [p['content'] for p in patterns]
 
 
 def main():

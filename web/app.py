@@ -61,7 +61,7 @@ def ping_pong():
 
 @app.route('/posts/', methods=["GET"])
 def show_posts():
-    idrss = random.sample(range(0, 14157), 10)
+    idrss = random.sample(range(14157), 10)
     posts = mongo_col.find({"idrs": {"$in": idrss}})
     random_posts = [
         {
